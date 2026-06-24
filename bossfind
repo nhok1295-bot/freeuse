@@ -5,7 +5,6 @@ local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- ============================
 local libraryFolder = ReplicatedStorage:WaitForChild("Library", 30)
 if libraryFolder then
     local ClientFolder = libraryFolder:WaitForChild("Client", 15)
