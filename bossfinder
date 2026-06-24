@@ -5,6 +5,9 @@ local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- ============================
+-- 1. JOIN EVENT
+-- ============================
 local libraryFolder = ReplicatedStorage:WaitForChild("Library", 30)
 if libraryFolder then
     local ClientFolder = libraryFolder:WaitForChild("Client", 15)
@@ -19,6 +22,9 @@ end
 
 task.wait(10)
 
+-- ============================
+-- 2. ĐẾM BOSS
+-- ============================
 local Breakables = workspace.__THINGS.Breakables
 local bosses = 0
 
@@ -28,6 +34,9 @@ for _, breakable in ipairs(Breakables:GetChildren()) do
     end
 end
 
+-- ============================
+-- 3. XỬ LÝ KẾT QUẢ
+-- ============================
 if bosses >= 3 then
     local serverJobId = game.JobId
     local placeId = game.PlaceId
@@ -59,8 +68,8 @@ if bosses >= 3 then
         end)
     end
 else
-    local placeId = game.PlaceId
+    -- Hop server đơn giản nhất
     pcall(function()
-        TeleportService:Teleport(placeId, game.Players.LocalPlayer)
+        TeleportService:Teleport(game.PlaceId)
     end)
 end
