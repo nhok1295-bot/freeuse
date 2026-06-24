@@ -1,16 +1,10 @@
--- ============================
--- AUTO JOIN EVENT + TÌM BOSS + GỬI DISCORD + HOP SERVER
--- ============================
-
-local webhookURL = "https://discord.com/api/webhooks/1516774421787054262/kpEu6j9Iz_Zi01XN_mRvQRY-pvIkygxAiZypxCcdIRfWqpEV12BDG6vtgddMB_Nr1_os"
-local DiscordUserID = "989895037406044200"
+local webhookURL = getgenv().WebhookURL
+local DiscordUserID = getgenv().WebhookUserID
 local playerName = game.Players.LocalPlayer.Name
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- ============================
--- 1. JOIN EVENT
 -- ============================
 local libraryFolder = ReplicatedStorage:WaitForChild("Library", 30)
 if libraryFolder then
@@ -24,12 +18,8 @@ if libraryFolder then
     end
 end
 
--- Đợi event load
 task.wait(10)
 
--- ============================
--- 2. ĐẾM BOSS
--- ============================
 local Breakables = workspace.__THINGS.Breakables
 local bosses = 0
 
@@ -39,9 +29,6 @@ for _, breakable in ipairs(Breakables:GetChildren()) do
     end
 end
 
--- ============================
--- 3. XỬ LÝ KẾT QUẢ
--- ============================
 if bosses >= 3 then
     local serverJobId = game.JobId
     local placeId = game.PlaceId
@@ -53,25 +40,26 @@ if bosses >= 3 then
     description = description .. "Số người chơi: " .. playerCount .. "\n"
     description = description .. "Số boss: **" .. bosses .. "**"
     
-    pcall(function()
-        syn.request({
-            Url = webhookURL,
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = HttpService:JSONEncode({
-                content = "<@" .. DiscordUserID .. ">",
-                embeds = {{
-                    title = "🔥 TIM THAY SERVER NHIEU BOSS",
-                    description = description,
-                    color = 16711680,
-                    footer = {text = "Pet Simulator 99 - Boss Scanner"},
-                    timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-                }}
+    if webhookURL ~= "" then
+        pcall(function()
+            syn.request({
+                Url = webhookURL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    content = DiscordUserID ~= "" and "<@" .. DiscordUserID .. ">" or "",
+                    embeds = {{
+                        title = "🔥 TIM THAY SERVER NHIEU BOSS",
+                        description = description,
+                        color = 16711680,
+                        footer = {text = "Pet Simulator 99 - Boss Scanner"},
+                        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+                    }}
+                })
             })
-        })
-    end)
+        end)
+    end
 else
-    -- Hop server nếu không đủ 3 boss
     local placeId = game.PlaceId
     pcall(function()
         TeleportService:Teleport(placeId, game.Players.LocalPlayer)
