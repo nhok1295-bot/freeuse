@@ -34,7 +34,7 @@ if libraryFolder then
     end
 end
 
-task.wait(5)
+task.wait(13)
 
 -- ============================
 -- 2. ĐẾM BOSS
