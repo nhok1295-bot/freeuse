@@ -1,0 +1,138 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local player = Players.LocalPlayer
+local PLACE_ID = 8737899170
+
+-- ============================
+-- GUI
+-- ============================
+if game.CoreGui:FindFirstChild("BossScanner") then
+    game.CoreGui.BossScanner:Destroy()
+end
+
+local sg = Instance.new("ScreenGui")
+sg.Name = "BossScanner"
+sg.Parent = game.CoreGui
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(0, 300, 0, 80)
+label.Position = UDim2.new(0, 10, 0, 10)
+label.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+label.BackgroundTransparency = 0.3
+label.TextColor3 = Color3.fromRGB(0, 255, 100)
+label.Font = Enum.Font.Code
+label.TextSize = 12
+label.TextWrapped = true
+label.Text = "Dang vao event..."
+label.Parent = sg
+
+-- ============================
+-- HELPER
+-- ============================
+local function getHRP()
+    local char = player.Character
+    if not char then
+        char = player.CharacterAdded:Wait()
+    end
+    return char:WaitForChild("HumanoidRootPart", 10)
+end
+
+local function safeTeleport(pos)
+    local hrp = getHRP()
+    if hrp and pos then
+        hrp.CFrame = CFrame.new(pos.X, pos.Y + 2.5, pos.Z)
+    end
+end
+
+-- ============================
+-- AUTO JOIN EVENT
+-- ============================
+local libraryFolder = ReplicatedStorage:WaitForChild("Library", 30)
+if not libraryFolder then return end
+
+local ClientFolder = libraryFolder:WaitForChild("Client", 15)
+local InstancingCmds = require(ClientFolder:WaitForChild("InstancingCmds"))
+local FFlags = require(ClientFolder:WaitForChild("FFlags"))
+
+local joinTarget = FFlags.Get(FFlags.Keys.SideJoinEventTarget)
+if joinTarget then
+    InstancingCmds.Enter(joinTarget, nil, true, "You are joining the minigame!")
+end
+
+task.wait(10)
+
+-- ============================
+-- VÀO DEEP BACKROOMS
+-- ============================
+local thingsContainer = workspace:WaitForChild("__THINGS")
+local generatedBackrooms = thingsContainer:WaitForChild("__INSTANCE_CONTAINER"):WaitForChild("Active"):WaitForChild("Backrooms"):WaitForChild("GeneratedBackrooms")
+
+local spawnRoomFolder = generatedBackrooms:WaitForChild("SpawnRoom", 30)
+if spawnRoomFolder then
+    local deepDoor = spawnRoomFolder:FindFirstChild("DeepDoor")
+    if deepDoor and deepDoor:FindFirstChild("Interact") then
+        local interactPart = deepDoor.Interact
+        
+        for i = 1, 5 do
+            safeTeleport(interactPart.Position)
+            task.wait(0.3)
+        end
+        
+        task.wait(2)
+        
+        local roomUID = spawnRoomFolder:GetAttribute("RoomUID")
+        if roomUID then
+            pcall(function()
+                ReplicatedStorage:WaitForChild("Network"):WaitForChild("Instancing_FireCustomFromClient"):FireServer(
+                    "Backrooms", "AbstractRoom_FireServer", roomUID, "EnterDeepBackrooms"
+                )
+            end)
+        else
+            safeTeleport(interactPart.Position)
+        end
+    end
+end
+
+-- ============================
+-- QUÉT BOSS + HOP SERVER
+-- ============================
+task.wait(2)
+
+local noBossCount = 0
+
+task.spawn(function()
+    while task.wait(1) do
+        local Breakables = workspace.__THINGS.Breakables
+        local bosses = 0
+        
+        for _, breakable in ipairs(Breakables:GetChildren()) do
+            if breakable:IsA("Model") and breakable:GetAttribute("BreakableID") == "Daydream Mimic Boss2" then
+                bosses = bosses + 1
+            end
+        end
+        
+        local str = "Dang tim boss...\n"
+        str = str .. "Boss: " .. bosses .. "/" .. getgenv().TotalBoss
+        
+        if bosses < getgenv().TotalBoss then
+            noBossCount = noBossCount + 1
+            str = str .. "\nKo du boss: " .. noBossCount .. "s"
+            
+            if noBossCount >= 10 then
+                str = str .. "\nDang hop server..."
+                label.Text = str
+                task.wait(1)
+                pcall(function()
+                    TeleportService:Teleport(PLACE_ID)
+                end)
+                return
+            end
+        else
+            noBossCount = 0
+            str = str .. " 🔥"
+        end
+        
+        label.Text = str
+    end
+end)
