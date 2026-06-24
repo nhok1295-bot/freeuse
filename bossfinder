@@ -4,6 +4,20 @@ local playerName = game.Players.LocalPlayer.Name
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- ============================
+-- LƯU DANH SÁCH SERVER ĐÃ GHÉ
+-- ============================
+if not getgenv().VisitedServers then
+    getgenv().VisitedServers = {}
+end
+
+-- ============================
+-- LƯU SERVER HIỆN TẠI
+-- ============================
+getgenv().VisitedServers[game.JobId] = true
 
 -- ============================
 -- 1. JOIN EVENT
@@ -20,7 +34,7 @@ if libraryFolder then
     end
 end
 
-task.wait(10)
+task.wait(5)
 
 -- ============================
 -- 2. ĐẾM BOSS
@@ -46,7 +60,8 @@ if bosses >= 3 then
     description = description .. "Server JobId: `" .. serverJobId .. "`\n"
     description = description .. "Place ID: `" .. placeId .. "`\n"
     description = description .. "Số người chơi: " .. playerCount .. "\n"
-    description = description .. "Số boss: **" .. bosses .. "**"
+    description = description .. "Số boss: **" .. bosses .. "**\n"
+    description = description .. "Đã hop qua: " .. #getgenv().VisitedServers .. " server"
     
     if webhookURL ~= "" then
         pcall(function()
@@ -68,7 +83,6 @@ if bosses >= 3 then
         end)
     end
 else
-    -- Hop server đơn giản nhất
     pcall(function()
         TeleportService:Teleport(game.PlaceId)
     end)
