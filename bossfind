@@ -1,5 +1,5 @@
 -- ============================
--- TÌM BOSS VÀ GỬI DISCORD + AUTO HOP SERVER
+-- AUTO JOIN EVENT + TÌM BOSS + GỬI DISCORD + HOP SERVER
 -- ============================
 
 local webhookURL = "https://discord.com/api/webhooks/1516774421787054262/kpEu6j9Iz_Zi01XN_mRvQRY-pvIkygxAiZypxCcdIRfWqpEV12BDG6vtgddMB_Nr1_os"
@@ -7,7 +7,29 @@ local DiscordUserID = "989895037406044200"
 local playerName = game.Players.LocalPlayer.Name
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- ============================
+-- 1. JOIN EVENT
+-- ============================
+local libraryFolder = ReplicatedStorage:WaitForChild("Library", 30)
+if libraryFolder then
+    local ClientFolder = libraryFolder:WaitForChild("Client", 15)
+    local InstancingCmds = require(ClientFolder:WaitForChild("InstancingCmds"))
+    local FFlags = require(ClientFolder:WaitForChild("FFlags"))
+    
+    local joinTarget = FFlags.Get(FFlags.Keys.SideJoinEventTarget)
+    if joinTarget then
+        InstancingCmds.Enter(joinTarget, nil, true, "You are joining the minigame!")
+    end
+end
+
+-- Đợi event load
+task.wait(10)
+
+-- ============================
+-- 2. ĐẾM BOSS
+-- ============================
 local Breakables = workspace.__THINGS.Breakables
 local bosses = 0
 
@@ -17,6 +39,9 @@ for _, breakable in ipairs(Breakables:GetChildren()) do
     end
 end
 
+-- ============================
+-- 3. XỬ LÝ KẾT QUẢ
+-- ============================
 if bosses >= 3 then
     local serverJobId = game.JobId
     local placeId = game.PlaceId
