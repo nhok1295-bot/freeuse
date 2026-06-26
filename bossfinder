@@ -174,7 +174,7 @@ task.spawn(function()
             noBossCount = noBossCount + 1
             str = str .. "\nKo du boss: " .. noBossCount .. "s"
             
-            if noBossCount >= 3 then
+            if noBossCount >= 7 then
                 str = str .. "\nDang hop server..."
                 label.Text = str
                 task.wait(1)
