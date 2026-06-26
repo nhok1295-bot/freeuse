@@ -6,6 +6,8 @@ getgenv().TotalBoss = 3
 getgenv().WebhookURL = "https://discord.com/api/webhooks/1518641064091586570/TGdtGF7IwrePFQxQaCvEr2_0I8SjFSqSJ6DYAcBJrNGN76hEhcij5vtyJK5G819CvV7Fm"
 getgenv().DiscordUserID = "989895037406044200"
 
+if not game:IsLoaded() then game.Loaded:Wait() end
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
@@ -97,7 +99,7 @@ if joinTarget then
     InstancingCmds.Enter(joinTarget, nil, true, "You are joining the minigame!")
 end
 
-task.wait(7)
+task.wait(10)
 
 -- ============================
 -- VÀO DEEP BACKROOMS
@@ -153,7 +155,6 @@ task.spawn(function()
         local str = "Dang tim boss...\n"
         str = str .. "Boss: " .. bosses .. "/" .. getgenv().TotalBoss
         
-        -- Nếu có > 2 boss và chưa gửi webhook
         if bosses > 2 and not webhookSent then
             webhookSent = true
             local jobId = game.JobId
@@ -173,7 +174,7 @@ task.spawn(function()
             noBossCount = noBossCount + 1
             str = str .. "\nKo du boss: " .. noBossCount .. "s"
             
-            if noBossCount >= 10 then
+            if noBossCount >= 3 then
                 str = str .. "\nDang hop server..."
                 label.Text = str
                 task.wait(1)
