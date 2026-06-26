@@ -1,0 +1,9 @@
+
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+local TeleportService = game:GetService("TeleportService")
+local PLACE_ID = 8737899170
+
+pcall(function()
+    TeleportService:Teleport(PLACE_ID)
+end)
