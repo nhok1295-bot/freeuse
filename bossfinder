@@ -1,8 +1,18 @@
+-- ============================
+-- BOSS SCANNER + WEBHOOK + HOP SERVER
+-- ============================
+
+getgenv().TotalBoss = 3
+getgenv().WebhookURL = "https://discord.com/api/webhooks/1518641064091586570/TGdtGF7IwrePFQxQaCvEr2_0I8SjFSqSJ6DYAcBJrNGN76hEhcij5vtyJK5G819CvV7Fm"
+getgenv().DiscordUserID = "989895037406044200"
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local player = Players.LocalPlayer
 local PLACE_ID = 8737899170
+local webhookSent = false
 
 -- ============================
 -- GUI
@@ -43,6 +53,33 @@ local function safeTeleport(pos)
     if hrp and pos then
         hrp.CFrame = CFrame.new(pos.X, pos.Y + 2.5, pos.Z)
     end
+end
+
+-- ============================
+-- DISCORD WEBHOOK
+-- ============================
+local function sendToDiscord(title, description, color)
+    if getgenv().WebhookURL == "" then return end
+    
+    local requestFunction = syn and syn.request or http_request or request
+    if not requestFunction then return end
+    
+    pcall(function()
+        requestFunction({
+            Url = getgenv().WebhookURL,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode({
+                content = getgenv().DiscordUserID ~= "" and "<@" .. getgenv().DiscordUserID .. ">" or "",
+                embeds = {{
+                    title = title,
+                    description = description,
+                    color = color,
+                    timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+                }}
+            })
+        })
+    end)
 end
 
 -- ============================
@@ -95,11 +132,12 @@ if spawnRoomFolder then
 end
 
 -- ============================
--- QUÉT BOSS + HOP SERVER
+-- QUÉT BOSS + WEBHOOK + HOP SERVER
 -- ============================
 task.wait(2)
 
 local noBossCount = 0
+webhookSent = false
 
 task.spawn(function()
     while task.wait(1) do
@@ -114,6 +152,22 @@ task.spawn(function()
         
         local str = "Dang tim boss...\n"
         str = str .. "Boss: " .. bosses .. "/" .. getgenv().TotalBoss
+        
+        -- Nếu có > 2 boss và chưa gửi webhook
+        if bosses > 2 and not webhookSent then
+            webhookSent = true
+            local jobId = game.JobId
+            local playerCount = #Players:GetPlayers()
+            
+            sendToDiscord(
+                "🔥 TIM THAY SERVER NHIEU BOSS",
+                "**" .. player.Name .. "** da tim thay server co **" .. bosses .. "** boss!\n" ..
+                "Server JobId: `" .. jobId .. "`\n" ..
+                "Place ID: `" .. PLACE_ID .. "`\n" ..
+                "Nguoi choi: " .. playerCount,
+                16711680
+            )
+        end
         
         if bosses < getgenv().TotalBoss then
             noBossCount = noBossCount + 1
