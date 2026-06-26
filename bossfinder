@@ -99,7 +99,7 @@ if joinTarget then
     InstancingCmds.Enter(joinTarget, nil, true, "You are joining the minigame!")
 end
 
-task.wait(10)
+task.wait(5)
 
 -- ============================
 -- VÀO DEEP BACKROOMS
