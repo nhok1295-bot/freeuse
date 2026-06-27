@@ -1,0 +1,25 @@
+-- Script chống AFK: Nhảy mỗi 3 phút (180 giây)
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Hàm thực hiện hành động nhảy
+local function performJump()
+    -- Kiểm tra xem nhân vật và Humanoid có tồn tại không
+    local character = LocalPlayer.Character
+    if character then
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.Jump = true -- Kích hoạt nhảy
+            print("Đã nhảy để chống AFK!") -- In thông báo ra console để biết script đang chạy
+        end
+    end
+end
+
+-- Vòng lặp chính
+while true do
+    -- Gọi hàm nhảy
+    performJump()
+    -- Chờ 180 giây (3 phút) trước khi lặp lại
+    wait(180)
+end
